@@ -314,15 +314,13 @@ print("""
 
 
 # Données input (x) et output(y)
-x=np.array([[1], [1.5], [2], [2.5], [3.5], [4], [4.5], [5], [5.5], [6]])
-y=np.array([[1.10], [1.15], [1.20], [1.195], [1.30], [1.40], [1.38], [1.50], [1.47], [1.60]])
+#x=np.array([[1], [1.5], [2], [2.5], [3.5], [4], [4.5], [5], [5.5], [6]])
+#y=np.array([[1.10], [1.15], [1.20], [1.195], [1.30], [1.40], [1.38], [1.50], [1.47], [1.60]])
 
-X=np.hstack((x,np.ones((recupNbLignes(x),1))))
+#X=np.hstack((x,np.ones((recupNbLignes(x),1))))
 
 
-#w=np.zeros((1,2))
-#w=np.array([[0.0940404],[0.99565657 ]], dtype='float64')
-w=np.array([[1],[1]], dtype='float64')
+#w=np.array([[1],[1]], dtype='float64')
 
 
 
@@ -351,14 +349,9 @@ def gradientDescent(inputs, outputs, weights):
     i=2000
      
     while i>0:
-        print("""    """)
-        print(gradient(inputs, outputs, weights))
+        
         weights-=0.001*gradient(inputs, outputs, weights)
-        print(weights)
-        print(round(mse(inputs, outputs, weights),3))
-        print("""    """)
         i-=1
-      
     
     return(weights, round(mse(inputs, outputs, weights),3))
     
@@ -367,8 +360,8 @@ def gradientDescent(inputs, outputs, weights):
 #print(""" Mon gradient """)
 #print(gradient(X, y, w))
 
-print(""" Mon gradient descent """)
-print(gradientDescent(X, y, w))
+#print(""" Mon gradient descent """)
+#print(gradientDescent(X, y, w))
 
 
 #print(""" MSE """)
@@ -376,5 +369,114 @@ print(gradientDescent(X, y, w))
     
 
 
+###########################################################################################################
+###########################################################################################################
+###  Derivation de la MSE pour un model multidim
+###########################################################################################################
+###########################################################################################################
 
+
+
+
+# Données input (x) et output(y)
+x1=np.array([[1], [1.5], [2], [2.5], [3.5], [4], [4.5], [5], [5.5], [6]])
+x2=np.array([[2], [2.5], [3], [3.5], [4.5], [5], [5.5], [6], [6.5], [7]])
+
+y=np.array([[1.10], [1.15], [1.20], [1.195], [1.30], [1.40], [1.38], [1.50], [1.47], [1.60]])
+
+zOne=np.ones((recupNbLignes(x1),1))
+
+X=np.hstack((x1, x2, zOne))
+
+VectW=np.ones((recupNbCol(X),1))
+
+'''VectW[0,0]=0.1
+VectW[1,0]=0.98
+
+print(VectW)'''
+
+
+
+# fonction mse
+def MultiMse(inputs, outputs, weights):
+    
+    mse = 1/recupNbLignes(inputs)*np.sum(np.square(outputs-(inputs[:,:-1].dot(weights[:-1,:])+weights[-1,0])))
+    
+    return round(mse,3)
+
+def DerivB (inputs, outputs, weights): 
+    
+    DmseB=2/recupNbLignes(inputs)*np.sum((-outputs)+(inputs[:,:-1].dot(weights[:-1,:]))+(weights[-1,0]))      
+    
+    return round(DmseB,3)
+
+
+def DerivW (inputs, outputs, weights): 
+    
+    GradW=np.zeros((recupNbCol(inputs)-1,1))
+    
+    i=0
+    while i<recupNbCol(inputs)-1:
+        
+        xi=inputs[:,i].reshape(recupNbLignes(inputs),1)
+       
+        xTrt=np.hstack(((inputs[:,0:i]),inputs[:,i+1:-1]))
+        wTrt=np.vstack(((VectW[0:i,:]),VectW[i+1:-1,:]))
+        
+                            
+        GradW[i] = round(2/recupNbLignes(inputs)*np.sum(-xi*outputs + xi*(xTrt.dot(wTrt)) +xi*weights[-1,0]+weights[i,0]*np.square(xi)), 3)
+               
+        i+=1
+        
+    return GradW
+
+
+# Fonction Gradient
+def MultiGradient(inputs, outputs, weights):
+    #derivé de la fonction MSE par rapport a w1
+    DmseW1=DerivW(inputs, outputs, weights)
+
+    #derivé de la fonction MSE par rapport a b
+    DmseB=DerivB(inputs, outputs, weights)
+    
+    # Definition du gradient
+    grad=np.vstack((DmseW1,DmseB))
+    
+    print(""" mon grad""")
+    print(grad)
+    
+    return(grad)
+
+
+
+
+def MultiGradientDescent(inputs, outputs, weights):
+    i=2000
+     
+    while i>0:
+        
+        weights-=0.001*MultiGradient(inputs, outputs, weights)
+        i-=1
+    
+    return(weights, MultiMse(inputs, outputs, weights))
+
+
+#print(MultiGradientDescent(X, y, VectW))
+
+
+print(""" Mon MultiGradientDescent """)
+print(MultiGradientDescent(X, y, VectW))
+
+
+
+
+
+
+
+
+
+
+
+    
+    
 
