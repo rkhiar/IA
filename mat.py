@@ -8,7 +8,7 @@ Created on Wed Aug 22 18:44:11 2018
 
 import numpy as np
 import pandas as pd
-import decimal
+import decimal as Decimal
 
 ########################
 #Variable definition
@@ -396,6 +396,7 @@ VectW[1,0]=0.98
 print(VectW)'''
 
 
+#print(X[:,-1])
 
 # fonction mse
 def MultiMse(inputs, outputs, weights):
@@ -464,19 +465,136 @@ def MultiGradientDescent(inputs, outputs, weights):
 #print(MultiGradientDescent(X, y, VectW))
 
 
-print(""" Mon MultiGradientDescent """)
-print(MultiGradientDescent(X, y, VectW))
+#print(""" Mon MultiGradientDescent """)
+#print(MultiGradientDescent(X, y, VectW))
 
 
 
 
+################################################################################"
+####  Classification Multiple
+#################################################################################
+
+# Definition des entrées (x1--> poid  / x2---> Taille)
+x1=np.array([[40, 45, 50, 55, 60, 65, 70, 75, 80]]).reshape((9,1))
+x2=np.array([[145, 150, 155, 160, 165, 170, 175, 180, 190]]).reshape((9,1))
+
+zOne=np.ones((recupNbLignes(x1),1))
+
+# Definition de la matrice Y contenant le veritable genre de chaque point
+P=np.array([[0,1],[0,1],[0,1],[0,1],[1,0],[1,0],[1,0],[1,0],[1,0]])
+
+#construction de la matrice X
+X=np.hstack((x1, x2, zOne))
+
+# Definition de la matrice de poids
+w=np.array([[1,0.5],[1,0.5],[1,1]])
+
+SomExp=np.ones((2,1))
 
 
+#dEfinition de ma propre fonction d'arrondi !!!! le round() c'est de la merde *
+def myRound(s): 
+    i=0
+    d=np.ones((recupNbLignes(s),recupNbCol(s)-1))
+    while i<recupNbCol(s):
+        d=np.hstack((d,np.array([float(str(elt)[0:5].replace('[','')) for elt in s[:,i]]).reshape((recupNbLignes(s),recupNbCol(s)-1))))
+        i+=1
+    return d[:,1:]
 
 
+#Definition de la fonction Score
+def score(weights, inputs):
+    return inputs.dot(weights)
+ 
 
-
-
+#Definition de la fonction softmax
+def softmax(sc):
+          
+    matSoft=np.exp(sc-np.max(sc,axis=1).reshape((recupNbLignes(sc),1)))/np.sum(np.exp(sc-np.max(sc,axis=1).reshape((recupNbLignes(sc),1))), axis=1).reshape((recupNbLignes(sc),1))
     
+    return matSoft
+
+
+#Definition de la fonction de perte 
+def crossEntropy(outputs, inputs, weights):
     
+    res=(1/recupNbLignes(outputs))*(np.sum(outputs*np.log(softmax(score(weights,inputs)))))
+    
+    return res
+
+
+
+# Dervié de la fonction cross entropy
+def derivCross(weights, soft, inputs, outputs):
+    derive=np.ones((recupNbLignes(soft), 1))
+    res=np.array(weights)
+    
+    j=0
+    while j<recupNbCol(weights):
+        i=0
+        while i<recupNbLignes(weights):
+            derive=np.ones((recupNbLignes(soft), 1))   
+            
+            if j>0:
+                            
+                derive=np.hstack((derive, soft[:,:j]*(-1*soft[:,j]*inputs[:,i]).reshape((recupNbLignes(soft), 1))))
+           
+            derive=np.hstack((derive, (soft[:,j]*(1-soft[:,j])*inputs[:,i]).reshape(((recupNbLignes(soft), 1)))))
+                
+            if j<recupNbCol(soft)-1:
+                derive=np.hstack((derive, (soft[:,j+1:])*(-1*soft[:,j]*inputs[:,i]).reshape((recupNbLignes(soft), 1))))
+          
+            #res.append((1/recupNbLignes(inputs))*np.sum(  (-outputs/soft)*(derive[:,1:])  ))
+            res[i,j]=(1/recupNbLignes(inputs))*np.sum(  (-outputs/soft)*(derive[:,1:])  )
+            
+            i+=1
+        j+=1
+        
+    return res
+
+
+
+
+def softGradientDescent(weights, soft, inputs, outputs):
+    i=2000
+    while i>0:
+        
+        weights-=0.001*derivCross(weights, softmax(score(weights,inputs)) ,inputs, outputs)
+        i-=1
+    
+    return(weights, crossEntropy(outputs, inputs, weights))
+
+
+
+#print("""ma derivée """)
+#print(derivCross(w, softmax(score(w,X)) ,X, P))
+
+
+#print("""gradient descent""")
+#print(softGradientDescent(w, softmax(score(w,X)), X, P))
+
+w2=np.array([[1.3579545 , 0.1420455 ],
+       [0.5349946 , 0.9650054 ],
+       [0.99199451, 1.00800549]])
+
+print(np.sum(softmax(score(w2,X)), axis=1))
+
+
+
+#print("""score""")
+#print(score(w,X))
+
+#print(""" Exp score""")
+#print(myRound(np.exp(score(w,X))))
+
+#print("""Some Exp score""")
+#print(np.sum(np.exp(score(w,X)), axis=1).reshape((recupNbLignes(score(w,X)),1)))
+
+#print(""" Softmax """)
+#print(softmax(score(w,X)))
+
+#print(""" ma cross entropy """)
+#print(crossEntropy(P,X,w))
+
 
