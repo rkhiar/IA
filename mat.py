@@ -571,30 +571,20 @@ def softGradientDescent(weights, soft, inputs, outputs):
 #print(derivCross(w, softmax(score(w,X)) ,X, P))
 
 
-#print("""gradient descent""")
-#print(softGradientDescent(w, softmax(score(w,X)), X, P))
-
-w2=np.array([[1.3579545 , 0.1420455 ],
-       [0.5349946 , 0.9650054 ],
-       [0.99199451, 1.00800549]])
-
-print(np.sum(softmax(score(w2,X)), axis=1))
+print("""gradient descent""")
+print(softGradientDescent(w, softmax(score(w,X)), X, P))
 
 
+############################################################################"
+### varification du bon apprentissage a partir d'un W2 issu du gradient descent
+#############################################################################"
+#w2=np.array([[1.3579545 , 0.1420455 ],
+#       [0.5349946 , 0.9650054 ],
+#       [0.99199451, 1.00800549]])
+#
+#print(np.sum(softmax(score(w2,X)), axis=1))
 
-#print("""score""")
-#print(score(w,X))
 
-#print(""" Exp score""")
-#print(myRound(np.exp(score(w,X))))
 
-#print("""Some Exp score""")
-#print(np.sum(np.exp(score(w,X)), axis=1).reshape((recupNbLignes(score(w,X)),1)))
-
-#print(""" Softmax """)
-#print(softmax(score(w,X)))
-
-#print(""" ma cross entropy """)
-#print(crossEntropy(P,X,w))
 
 
