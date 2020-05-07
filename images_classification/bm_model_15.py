@@ -26,14 +26,15 @@ from tensorflow.train import GradientDescentOptimizer #Backprop algo with Gradie
 from tensorflow.keras.models import Model
 #from src.AsadNet import AsadNet
 
+from batch_genarator_rkh import BatchGenerator
 
 
 import warnings
 warnings.filterwarnings("ignore")
 
 
-from batch_genarator_rkh import BatchGenerator
 
+#------------------------------------------------------------------
     
 # Variables definition
 train_path="/home/riad/Devs_Python/Credit_Safe/CNN/data/train/"
@@ -49,39 +50,18 @@ def CreatePartition(path):
 
 
 
-
-# Program
+# Preparing Data
 
 partition={}
 
 partition['train']=CreatePartition(train_path)
 partition['test']=CreatePartition(test_path)
 
-
-'''
-train_label1=np.hstack((np.zeros((12500,1), dtype=np.int), np.ones((12500,1), dtype=np.int)))
-train_label2=np.hstack((np.ones((12500,1), dtype=np.int), np.zeros((12500,1), dtype=np.int)))
-train_output=np.vstack((train_label1, train_label2)).tolist()
-
-test_label1=np.hstack((np.zeros((25,1), dtype=np.int), np.ones((25,1), dtype=np.int)))
-test_label2=np.hstack((np.ones((25,1), dtype=np.int), np.zeros((25,1), dtype=np.int)))
-test_output=np.vstack((test_label1, test_label2)).tolist()
-'''
-
-'''
-train_labels=dict(zip(partition['train'],train_output))
-test_labels=dict(zip(partition['test'],test_output))
-'''
-
-
-
 train_output=np.vstack((np.zeros((12500,1), dtype=np.int),np.ones((12500,1), dtype=np.int))).reshape((1,25000)).tolist()
 test_output=np.vstack((np.zeros((25,1)),np.ones((25,1)))).reshape((1,50)).tolist()
 
 train_labels=dict(zip(partition['train'],train_output[0]))
 test_labels=dict(zip(partition['test'],test_output[0]))
-
-
 
 
 
@@ -100,22 +80,13 @@ training_generator = BatchGenerator(train_path, partition['train'], train_labels
 validation_generator = BatchGenerator(test_path, partition['test'], test_labels, **params)
 
 
-'''
-inputs_img = Input(shape=(256,256,3))
-flat_input=Flatten()(inputs_img)
-x = Dense(200, activation=tf.nn.relu)(flat_input)
-x2 = Dense(50, activation=tf.nn.relu)(x)
-outputs = Dense(2, activation=tf.nn.softmax)(x2) 
-model = Model(inputs=inputs_img, outputs=outputs)
-'''
-
+# Model
 inputs_img = Input(shape=(256,256,3))
 conv_layer=Conv2D(filters = 3, kernel_size = (3,3), padding = 'same', activation = 'relu')(inputs_img)
 print(conv_layer.shape)
 flat_input=Flatten()(conv_layer)
 x = Dense(200, activation=tf.nn.relu)(flat_input)
 x2 = Dense(50, activation=tf.nn.relu)(x)
-
 outputs = Dense(2, activation=tf.nn.softmax)(x2)
 model = Model(inputs=inputs_img, outputs=outputs)
 
@@ -131,4 +102,4 @@ model.fit_generator(generator=training_generator
                     # workers=6
                     )
    
-print("c est finiiiiiiiiiiiiiiiiiiiiiiii")
+print("END")
