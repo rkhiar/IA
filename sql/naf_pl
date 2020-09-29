@@ -1,0 +1,127 @@
+
+
+
+
+DECLARE
+org_nummer varchar(10);
+code varchar(5);
+classe varchar(4);
+group_code varchar(3);
+division varchar(2);
+section varchar(1);
+
+--delete from csfrmuly.preferentials_activity_codes;
+
+
+CURSOR SIRENS IS 
+select distinct sr.org_nummer ,  siret.code, siret.classe, siret.group_code, siret.division, siret.section
+from (
+
+	select distinct info.org_nummer ,  info.apen700
+    from CS.cs_companyinfo info, CS.ip_company_registration_info reg,
+    cs.cs_preferentials_summary suivi
+    where reg.org_nummer=info.org_nummer
+    and reg.org_nummer = suivi.org_nummer
+    and info.head_office =1 
+    and to_date(info.ec_date_of_formation, 'MMYYYY') <  to_date('01/01/15', 'dd/mm/yy')
+    and info.departement not in ('97','98','67','68','57','99')
+    --and info.legal_status like '1%'
+    and suivi.status_monitoring in ('1','2') -- les suivi privileges actifs
+     and suivi.start_monitoring < to_date('01/01/17', 'dd/mm/yy')
+    and suivi.stop_monitoring > to_date('01/01/18', 'dd/mm/yy')
+    /*and info.org_nummer not in (
+        select distinct pref.org_nummer
+        from CS.cs_preferentials_details pref
+        where pref.preferential_filing_date < to_date('01/01/17', 'dd/mm/yy')
+        and pref.dead_date > to_date('01/01/15', 'dd/mm/yy')
+        )*/
+
+
+)sr ,cs.cs_code_n700 siret
+where siret.code = sr.apen700
+ ;
+
+BEGIN
+
+dbms_output.enable(1000000);
+OPEN SIRENS;
+    
+    LOOP
+        FETCH SIRENS INTO org_nummer, code, classe, group_code, division, section;
+        EXIT WHEN SIRENS%NOTFOUND;
+            IF code in ('6420Z','6831Z','6820B','4399C') THEN
+                insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, code);
+                elsif classe in ('4332','4669','5610') THEN
+                    insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, classe);
+                    elsIF group_code in ('432','477','464','467','494') THEN
+                        insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, group_code);
+                        elsIF division in ('47','45','71','25','43','10','46','70','68') THEN
+                            insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, division);
+                            elsIF section  in ('M','C','J','N','F') THEN
+                                insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, section);
+                                else insert into csfrmuly.preferentials_activity_codes(ORG_NUMMER, ACT_CODE) VALUES (org_nummer, '999');
+            END IF;
+            
+    END LOOP;
+CLOSE SIRENS;
+END; 
+
+
+
+
+
+
+
+#############################################################################################
+#############################################################################################
+
+
+
+ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '. ' ;
+
+SELECT naf.org_nummer, SQ1.act_preferential_rate
+
+from (
+
+	select SQ.act_code, round(SQ.preferential_1/SQ.out_count , 5) as act_preferential_rate
+	from (
+	
+		select naf.act_code
+		,count(case when nvl(sr1.org_nummer,0) <> 0 then 1 else 0 end) out_count
+		,sum(case when nvl(sr1.org_nummer,0) <> 0 then 1 else 0 end) preferential_1
+		from (
+			select info.org_nummer, info.region, info.departement, info.district, info.area, info.municipality, info.post_code, info.size_of_urban_area,
+			info.size_of_municipality,  info.employment_area, info.seasonal, info.workforce_section,
+			months_BETWEEN(to_date('01012017', 'DDMMYYYY'), to_date(info.ec_date_of_formation, 'MMYYYY')) as months_old ,
+			reg.capital from CS.cs_companyinfo info, CS.ip_company_registration_info reg, cs.cs_preferentials_summary suivi
+			where reg.org_nummer=info.org_nummer
+			and reg.org_nummer = suivi.org_nummer
+			and info.head_office =1 
+			and to_date(info.ec_date_of_formation, 'MMYYYY') <  to_date('01/01/15', 'dd/mm/yy')
+			and info.departement not in ('97','98','67','68','57','99')
+			--and info.legal_status like '1%'
+			and suivi.status_monitoring in ('1','2') -- les suivi privileges actifs
+			and suivi.start_monitoring < to_date('01/01/17', 'dd/mm/yy')
+			and suivi.stop_monitoring > to_date('01/01/18', 'dd/mm/yy')
+			/*and info.org_nummer not in (
+				select distinct pref.org_nummer
+				from CS.cs_preferentials_details pref
+				where pref.preferential_filing_date < to_date('01/01/17', 'dd/mm/yy')
+				and pref.dead_date > to_date('01/01/15', 'dd/mm/yy')
+				)*/
+		) sr  left join (
+			select distinct pref.org_nummer
+			from CS.cs_preferentials_details pref
+			where pref.preferential_filing_date between to_date('01/01/17', 'dd/mm/yy') and to_date('01/01/18', 'dd/mm/yy')
+		) sr1 
+		on sr.org_nummer=sr1.org_nummer 
+		inner join csfrmuly.preferentials_activity_codes naf
+		on sr.org_nummer=naf.org_nummer 
+		group by naf.act_code
+	) SQ  
+) SQ1 inner join   csfrmuly.preferentials_activity_codes naf
+
+ON SQ1.act_code=naf.act_code
+
+;
+
