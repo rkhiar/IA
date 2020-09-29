@@ -1,0 +1,62 @@
+
+select sr.org_nummer, sr1.age, sr2.nb_dir
+   
+from (
+    select info.org_nummer, info.workforce_section, info.SIZE_OF_URBAN_AREA, info.SIZE_OF_MUNICIPALITY,
+    round(months_BETWEEN(to_date('01012017', 'DDMMYYYY'), to_date(info.ec_date_of_formation, 'MMYYYY')),3) as months_old ,
+    reg.capital from CS.cs_companyinfo info, CS.ip_company_registration_info reg, cs.cs_preferentials_summary suivi
+    where reg.org_nummer=info.org_nummer
+    and reg.org_nummer = suivi.org_nummer
+    and info.head_office =1 
+    and to_date(info.ec_date_of_formation, 'MMYYYY') <  to_date('01/01/15', 'dd/mm/yy')
+    and info.departement not in ('97','98','67','68','57','99')
+    --and info.legal_status like '1%'
+    and suivi.status_monitoring in ('1','2') -- les suivi privileges actifs
+    and suivi.start_monitoring < to_date('01/01/17', 'dd/mm/yy')
+    and suivi.stop_monitoring > to_date('01/01/18', 'dd/mm/yy')
+    /*and info.org_nummer not in (
+        select pref.org_nummer
+        from CS.cs_preferentials_details pref
+        where pref.preferential_filing_date < to_date('01/01/17', 'dd/mm/yy')
+        and pref.dead_date > to_date('01/01/15', 'dd/mm/yy')
+        )*/
+) sr  
+left join (
+
+	select sq2.org_nummer, sq2.age from
+	(
+		select sq.org_nummer, sq.name, round(months_between(to_date('01012017', 'DDMMYYYY'), sq.date_of_birth),3) age,rank() over (partition by sq.Org_Nummer order by sq.pnr asc) double_rank from 
+			(
+			select dir.org_nummer, dir.name, dir.pnr, dir.date_of_birth, rank() over (partition by dir.Org_Nummer order by pos.exportrank asc) as ordre
+			from cs.cs_director_of_company  dir
+			inner join cs.cs_code_managertype pos
+			on dir.manager_position_code=pos.code
+			where dir.type_of_manager='PP'
+			)SQ
+		where sq.ordre=1
+		
+	) sq2
+	where sq2.double_rank=1
+) sr1
+on sr.org_nummer=sr1.org_nummer
+
+left join (
+
+	select sq3.org_nummer, count(*) nb_dir from
+        (
+        select dir.org_nummer, dir.name, dir.pnr, dir.date_of_birth, rank() over (partition by dir.Org_Nummer order by pos.exportrank asc) as ordre
+        from cs.cs_director_of_company  dir
+        inner join cs.cs_code_managertype pos
+        on dir.manager_position_code=pos.code
+        where dir.type_of_manager='PP'
+        )SQ3
+    where sq3.ordre=1 
+    group by sq3.org_nummer 
+) sr2
+on sr.org_nummer=sr2.org_nummer
+
+
+
+
+    
+    
