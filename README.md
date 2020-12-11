@@ -3,9 +3,9 @@ the project is structured in two main parts :
 
 ### analytics : 
 
-- Answering the queries corresponding to the basic question 1, 2 and 4.
-- In order to demonstrate different data processing skills, the queries are written using (basic) Pandas DataFrames and SQL.
-- The required visuals are produced using Matplotlib.
+Answering the queries corresponding to the basic question 1, 2 and 4.
+In order to demonstrate different data processing skills, the queries are written using (basic) Pandas DataFrames and SQL.
+The required visuals are produced using Matplotlib.
 
 ### Predictive modeling  : 
 The work has been split into 3 parts:
