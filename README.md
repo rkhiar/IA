@@ -8,7 +8,7 @@ In order to demonstrate different data processing skills, the queries are writte
 The required visuals are produced using Matplotlib.
 
 ### Predictive modeling  : 
-The work has been split into 3 parts:
+The work has been split into 3 parts: 
 
 #### Data set construction :
 Row data is provided in a transaction format. in order to perform the monthly sales predictive analysis, it has been aggregated based on this time dimension.
@@ -17,7 +17,8 @@ The logical approach of the data set construction is the following :
 To predict the transactions for the next three months  per customer at any time in 2019 for , the training will be based on a sequece of the last sliding year of data.
 
 ex : 
-Prediction of 201901--201903 sales will be based on  201801--201812 <br/>
+
+Prediction of 201901--201903 sales will be based on  201801--201812.
 Prediction of 201903--201906 sales will be based on  201803--201902......
 
 Using Sql queries, data has been formatted this way.
