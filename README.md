@@ -10,7 +10,7 @@ the project is structured in two main parts :
 ### Predictive modeling  : 
 The work has been split into 3 parts:
 
-1. Data set construction :
+#### Data set construction :
 Row data is provided in a transaction format. in order to perform the monthly sales predictive analysis, it has been aggregated based on this time dimension.
 The logical approach of the data set construction is the following :
 
@@ -28,7 +28,7 @@ This way, we'll produce a full twelve months sequence.
 Data is finally split in train and test.
 
 
-2. model development : 
+#### model development : 
 The problem faced is a sequential regression one.
 Since it is a univariate case, it can be solved using basic regression machine learning models or using a Recurrent Neural Network.
 
