@@ -1,7 +1,7 @@
 ## Project structure :
 The project is structured in two main parts :
 
-### analytics :  
+### Analytics :  
 rkhiar/scripts/queries.py
 
 Answering the queries corresponding to the basic questions 1, 2 and 4.  
