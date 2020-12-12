@@ -49,4 +49,19 @@ An evaluation script loads the test_data_set and makes predictions.
 #### Model deployment : 
 Deployment using a flask API receiving and returning json data :  
 Inputs  :  **customer_ID, [list of 12 months nb_transaction]**  
-Outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]** 
+Outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]**  
+
+Input example :  
+{  
+    "3915408" : [5,0,4,0,29,0,0,0,0,0,0,0],  
+    "1963935" : [0,0,0,0,0,0,0,0,0,0,0,1],  
+    "9495847" : [0,0,0,0,0,0,0,0,0,0,0,0]  
+}  
+  
+Output example :
+{  
+    "1963935": 6,  
+    "3915408": 4,  
+    "9495847": 4  
+}  
+
