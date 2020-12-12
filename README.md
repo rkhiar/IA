@@ -1,5 +1,5 @@
 ## Project structure :
-the project is structured in two main parts :
+The project is structured in two main parts :
 
 ### analytics :  
 rkhiar/scripts/queries.py
@@ -31,7 +31,7 @@ This way, we'll produce a full twelve months sequence.
 Data is finally split in train and test.  
 
 
-#### model development : 
+#### Model development : 
 rkhiar/scripts/model.py  
 rkhiar/scripts/evaluate.py  
 
@@ -48,7 +48,7 @@ These models were scored using Rsquared metric (appropriate one for regression c
 Gradient Boosting Regressor gives the best results with test R2 = 0.79. Model has been saved has been saved.  
 An evaluation script loads the test_data_set and makes predictions.
 
-#### model deployment : 
+#### Model deployment : 
 Deployment using a flask API receiving and returning json data :  
-inputs  :  **customer_ID, [list of 12 months nb_transaction]**  
-outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]** 
+Inputs  :  **customer_ID, [list of 12 months nb_transaction]**  
+Outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]** 
