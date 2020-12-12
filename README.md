@@ -4,7 +4,7 @@ The project is structured in two main parts :
 ### analytics :  
 rkhiar/scripts/queries.py
 
-Answering the queries corresponding to the basic question 1, 2 and 4.  
+Answering the queries corresponding to the basic questions 1, 2 and 4.  
 In order to demonstrate different data processing skills, the queries are written using (basic) Pandas DataFrames and SQL.  
 The required visuals are produced using Matplotlib/seaborn.
 
@@ -13,10 +13,10 @@ The required visuals are produced using Matplotlib/seaborn.
 #### Data set construction :
 rkhiar/scripts/data_preprocess.py  
 
-Row data is provided in a transaction format. in order to perform the monthly sales predictive analysis, it has been aggregated based on this time dimension.
+Row data is provided in a transaction list format. in order to perform the monthly sales predictive analysis, it has been aggregated based on this time dimension.
 The logical approach of the data set construction is the following :  
 
-To predict the number of transactions for the next three months  per customer at any time in 2019, the training will be based on a sequece of the last sliding year data. For instance : 
+To predict the number of transactions for the next three months  per customer at any time in 2019, the training will be based on a sequence of the last sliding year data. For instance : 
 
 Prediction of 201901--201903 sales will be based on  201801--201812 data.  
 Prediction of 201903--201906 sales will be based on  201803--201902 data ......  
@@ -43,8 +43,8 @@ Model applied are :
 - Recurrent Neural Network.
 
 These models were scored using Rsquared metric (appropriate one for regression case).
-Gradient Boosting Regressor gives the best results with test R2 = 0.79. Model has been saved has been saved.  
-An evaluation script loads the test_data_set and makes predictions.
+Gradient Boosting Regressor gives the best results with test R2 = 0.79. Model has been saved.  
+An evaluation script loads the model and the test_data_set and makes predictions.
 
 #### Model deployment : 
 Deployment using a flask API receiving and returning json data :  
@@ -55,7 +55,7 @@ Input example :
 {  
       "3915408" : [5,0,4,0,29,0,0,0,0,0,0,0],  
       "1963935" : [0,0,0,0,0,0,0,0,0,0,0,1],  
-            "9495847" : [0,0,0,0,0,0,0,0,0,0,0,0]  
+      "9495847" : [0,0,0,0,0,0,0,0,0,0,0,0]  
 }  
   
 
