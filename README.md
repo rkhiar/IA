@@ -1,25 +1,27 @@
 ## Project structure :
 the project is structured in two main parts :
 
-### analytics : 
+### analytics :  
+rkhiar/scripts/queries.py
 
 Answering the queries corresponding to the basic question 1, 2 and 4.  
 In order to demonstrate different data processing skills, the queries are written using (basic) Pandas DataFrames and SQL.  
-The required visuals are produced using Matplotlib.
+The required visuals are produced using Matplotlib/seaborn.
 
 ### Predictive modeling  : 
-The work has been split into 3 parts: 
 
 #### Data set construction :
+rkhiar/scripts/data_preprocess.py  
+
 Row data is provided in a transaction format. in order to perform the monthly sales predictive analysis, it has been aggregated based on this time dimension.
 The logical approach of the data set construction is the following :  
 
-To predict the transactions for the next three months  per customer at any time in 2019 for , the training will be based on a sequece of the last sliding year of data.  
+To predict the number of transactions for the next three months  per customer at any time in 2019, the training will be based on a sequece of the last sliding year data.  
 
-ex : 
+For instance : 
 
-Prediction of 201901--201903 sales will be based on  201801--201812.  
-Prediction of 201903--201906 sales will be based on  201803--201902......  
+Prediction of 201901--201903 sales will be based on  201801--201812 data.  
+Prediction of 201903--201906 sales will be based on  201803--201902 data ......  
 
 Using Sql queries, data has been formatted this way.  
 
@@ -30,6 +32,9 @@ Data is finally split in train and test.
 
 
 #### model development : 
+rkhiar/scripts/model.py  
+rkhiar/scripts/evaluate.py  
+
 The problem faced is a sequential regression one.
 Since it is a univariate case, it can be solved using basic regression machine learning models or using a Recurrent Neural Network.
 
@@ -40,5 +45,10 @@ Model applied are :
 - Recurrent Neural Network.
 
 These models were scored using Rsquared metric (appropriate one for regression case).
-Gradient Boosting Regressor gives the best results with test R2 = 0.79. It has been saved for an evaluation script to load it and make prediction.
+Gradient Boosting Regressor gives the best results with test R2 = 0.79. Model has been saved has been saved.  
+An evaluation script loads the test_data_set and makes predictions.
 
+#### model deployment : 
+Deployment using a flask API receiving and returning json data :  
+inputs  :  **customer_ID, [list of 12 months nb_transaction]**  
+outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]** 
