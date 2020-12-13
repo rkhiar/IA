@@ -49,7 +49,7 @@ An evaluation script loads the model and the test_data_set and makes predictions
 #### Model deployment : 
 Deployment using a flask API receiving and returning json data :  
 Inputs  :  **customer_ID, [list of 12 months nb_transaction]**  
-Outputs  :  **customer_ID, [list of the next 3 months nb_transaction prediction]**  
+Outputs  :  **customer_ID, the next 3 months nb_transaction prediction**  
 
 Input example :  
 {  
@@ -58,6 +58,6 @@ Input example :
       "3551916" : [2,5,0,0,12,9,1,0,0,0,0,0]  
 }  
   
-The API is accessible using **POSTMAN with a JSON ["POST" or "GET"] request containing body as the input example described above** :  
-ec2-35-180-85-192.eu-west-3.compute.amazonaws.com:8080/forcast  
+The API is accessible using **POSTMAN with a JSON ["POST" or "GET"] request containing body as the input example described above**.  
+Link : ec2-35-180-85-192.eu-west-3.compute.amazonaws.com:8080/forcast  
 
