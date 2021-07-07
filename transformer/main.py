@@ -101,12 +101,8 @@ START_TOKEN, END_TOKEN = [tokenizer.vocab_size], [tokenizer.vocab_size + 1]
 # Vocabulary size plus start and end token
 VOCAB_SIZE = tokenizer.vocab_size + 2
 
-
-
-
 # Maximum sentence length
 MAX_LENGTH = 40
-
 
 # Tokenize, filter and pad sentences
 def tokenize_and_filter(inputs, outputs):
@@ -132,15 +128,12 @@ def tokenize_and_filter(inputs, outputs):
 
 questions, answers = tokenize_and_filter(questions, answers)
 
-
 tokenizer.save_to_file(os.path.join(path_work, 'vocab'))
 
 
 #-----------------
 # model
 #-----------------
-
-
 
 # loss and learning rate defifition
 learning_rate = CustomSchedule(D_MODEL)
@@ -170,10 +163,7 @@ model.summary()
 model.save(os.path.join(path_work, 'model') )
 
 
-############# bidouilage #####################################################
-
-
-
+############# Draft #####################################################
 seq_test_enc=tf.expand_dims(questions[0],0)
 seq_test_dec=tf.expand_dims(answers[0],0)
 
@@ -185,12 +175,7 @@ predictions = model(inputs=[seq_test_enc, seq_test_dec], training=False)
 
 predictions = model.predict([seq_test_enc, y])
 
-
-
-
-
-
-############# bidouilage #####################################################
+############# Draft #####################################################
 """
 saved_model = tf.keras.models.load_model(DATA_PATH+'work/best_model.h5')
     
@@ -205,8 +190,6 @@ def evaluate(sentence):
       START_TOKEN + tokenizer.encode(sentence) + END_TOKEN, axis=0)
 
   output = tf.expand_dims(START_TOKEN, 0)
-
-
 
   for i in range(MAX_LENGTH):
     predictions = model(inputs=[sentence, output], training=False)
@@ -225,19 +208,13 @@ def evaluate(sentence):
   return tf.squeeze(output, axis=0)
 
 
-
 def predict(sentence):
   prediction = evaluate(sentence)
   predicted_sentence = tokenizer.decode([i for i in prediction if i < tokenizer.vocab_size])
   return predicted_sentence
 
 
-
-
 sentence='bonjour le robo'
-
 sentence = preprocess_sentence(sentence)
-
 sentence =  START_TOKEN + tokenizer.encode(sentence) + END_TOKEN
-
 output = tf.expand_dims(START_TOKEN, 0)
