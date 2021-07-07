@@ -24,7 +24,6 @@ class BatchGenerator(keras.utils.Sequence):
         self.path=path
         
 
-
     def img_resize(self, src_image, width, height):
         img = Image.open(src_image) # image extension *.png,*.jpg
         new_width  = width
@@ -34,7 +33,6 @@ class BatchGenerator(keras.utils.Sequence):
         return img
      
         
-    
     def __len__(self):
         'Denotes the number of batches per epoch'
         return int(np.floor(len(self.list_ids) / self.batch_size))
