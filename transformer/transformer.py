@@ -88,7 +88,7 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
     return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
 
 
-
+'''
 
 if __name__ == '__main__':
     
@@ -186,3 +186,4 @@ if __name__ == '__main__':
     
     print(loss_object(y, y_hat ).numpy()
     )
+'''
