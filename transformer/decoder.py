@@ -8,7 +8,6 @@ Created on Tue Oct  6 15:36:10 2020
 
 import tensorflow as tf
 import os
-
 os.chdir('/home/riad/Devs_Python/natural_langage_processing/transformer/chatbot/')
 
 from multi_head_attention_mat import MultiHeadAttention
@@ -93,89 +92,3 @@ class Decoder(tf.keras.layers.Layer):
         return ffn_out     
     
     
- 
-'''
-raw_inputs=[[1,2,3,4,4,5,12,3],[1,1,1,1]]
-
-padded_inputs = tf.keras.preprocessing.sequence.pad_sequences(
-    raw_inputs, padding="post"
-)
-
-
-print(padded_inputs )
-
-
-#vocab_size, word_emb_dim, input_length=seq_max_length
-#encoder_output = tf.keras.layers.Embedding(100, 12, input_length = 8, mask_zero=True)(padded_inputs)
-
-# One Embedding layer
-embedding = tf.keras.layers.Embedding(100, 12, input_length=8, mask_zero=True)
-        
-# positionnal encoding
-pos_encode = PositionalEncoding(12, 8)
-        
-# bottom Multi-Head Attention and Normalization layers
-self_attention = [MultiHeadAttention(12, 4) for _ in range(2)]
-self_attention_norm = [tf.keras.layers.BatchNormalization() for _ in range(2)]
-        
-# mid Multi-Head Attention and Normalization layers
-cross_attention = [MultiHeadAttention(12, 4) for _ in range(2)]
-cross_attention_norm = [tf.keras.layers.BatchNormalization() for _ in range(2)]
-
-        # nb_layers FFN and Normalization layers
-dense_1 = [tf.keras.layers.Dense(12 * 4, activation='relu') for _ in range(2)]
-dense_2 = [tf.keras.layers.Dense(12) for _ in range(2)]
-ffn_norm = [tf.keras.layers.BatchNormalization() for _ in range(2)]
-        
-dense = tf.keras.layers.Dense(100)
-
-
-
-
-        
-embed_out = embedding(padded_inputs)
-        
-# Create masks (padding and look ahead)
-embed_mask=tf.cast(embed_out._keras_mask, dtype='float32')
-embed_mask = tf.expand_dims(embed_mask, axis=1)
-embed_mask = tf.expand_dims(embed_mask, axis=1)            
-embed_mask = tf.matmul(embed_mask, embed_mask, transpose_a=True)
-
-
-look_left_only_mask = tf.linalg.band_part(tf.ones((8, 8)), -1, 0)
-look_left_only_mask = tf.repeat([look_left_only_mask[0]], repeats=2, axis=0)
-        
-        
-# positional encoding
-pos_out = pos_encode(embed_out)
-        
-bot_sub_in = pos_out
-        
-            
-# BOTTOM MULTIHEAD SUB LAYER
-            
-            
-bot_sub_out = self_attention[0](bot_sub_in, bot_sub_in, look_left_only_mask)  #!!!!!!!!!! problem
-
-
-bot_sub_out = bot_sub_in + bot_sub_out
-bot_sub_out = self_attention_norm[0](bot_sub_out)
-            
-            
-# MIDDLE MULTIHEAD SUB LAYER
-mid_sub_in = bot_sub_out
-
-mid_sub_out = cross_attention[0](mid_sub_in, embed_out, embed_mask)  # it own embeded out is like encoder output
-mid_sub_out = mid_sub_out + mid_sub_in
-mid_sub_out = cross_attention_norm[0](mid_sub_out)
-            
-            
-# FFN
-ffn_in = mid_sub_out
-
-ffn_out = dense_2[0](dense_1[0](ffn_in))
-ffn_out = ffn_in + ffn_out
-ffn_out = ffn_norm[0](ffn_out)
-
-logits = dense(ffn_out)
-'''
