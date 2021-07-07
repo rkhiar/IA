@@ -5,9 +5,11 @@ Created on Fri Aug  9 08:42:09 2019
 @author: csfrrdkr
 """
 
-
+import warnings
+warnings.filterwarnings("ignore")
 
 import os
+os.chdir('/home/riad/Devs_Python/CNN')
 from os import walk
 import numpy as np
 import pandas as pd
@@ -26,15 +28,9 @@ from tensorflow.train import GradientDescentOptimizer #Backprop algo with Gradie
 from tensorflow.keras.models import Model
 #from src.AsadNet import AsadNet
 
-
-
-os.chdir('/home/riad/Devs_Python/CNN')
-
 #Personel modules
 from batch_genarator import BatchGenerator
 
-import warnings
-warnings.filterwarnings("ignore")
 
 
 
@@ -54,41 +50,17 @@ def create_partition(path):
     return files_list
 
 
-
-
 # Partitions creation 
-
 partition={}
 
 partition['train']=create_partition(TRAIN_PATH)
 partition['test']=create_partition(TEST_PATH)
-
-
-'''
-train_label1=np.hstack((np.zeros((12500,1), dtype=np.int), np.ones((12500,1), dtype=np.int)))
-train_label2=np.hstack((np.ones((12500,1), dtype=np.int), np.zeros((12500,1), dtype=np.int)))
-train_output=np.vstack((train_label1, train_label2)).tolist()
-
-test_label1=np.hstack((np.zeros((25,1), dtype=np.int), np.ones((25,1), dtype=np.int)))
-test_label2=np.hstack((np.ones((25,1), dtype=np.int), np.zeros((25,1), dtype=np.int)))
-test_output=np.vstack((test_label1, test_label2)).tolist()
-'''
-
-'''
-train_labels=dict(zip(partition['train'],train_output))
-test_labels=dict(zip(partition['test'],test_output))
-'''
-
-
 
 train_output=np.vstack((np.zeros((12500,1), dtype=np.int),np.ones((12500,1), dtype=np.int))).reshape((1,25000)).tolist()
 test_output=np.vstack((np.zeros((25,1)),np.ones((25,1)))).reshape((1,50)).tolist()
 
 train_labels=dict(zip(partition['train'],train_output[0]))
 test_labels=dict(zip(partition['test'],test_output[0]))
-
-
-
 
 
 # Parameters
@@ -104,7 +76,6 @@ params = {'batch_size': 50,
 # Generators
 training_generator = BatchGenerator(TRAIN_PATH, partition['train'], train_labels, **params)
 validation_generator = BatchGenerator(TEST_PATH, partition['test'], test_labels, **params)
-
 
 
 
