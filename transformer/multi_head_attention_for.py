@@ -35,19 +35,12 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         # score has shape (batch, query_len, value_len)
         
         # mask must be broadcastable to (batch, query_len, value_len)
-        if mask is not None:
-            
-            '''after_trans_maskito =wq_layers(maskito)
-
-            print(tf.where(tf.equal(after_trans_maskito, 0), tf.zeros_like(after_trans_maskito), after_trans_maskito/after_trans_maskito)  )
-            '''
-            
+        if mask is not None:            
             score *= mask
             # asign masked positions to -1e9
             # so that their values after softmax are zeros
             score = tf.where(tf.equal(score, 0), tf.ones_like(score) * -1e9, score)    
             
-
         alignment = tf.nn.softmax(score, axis=2)
         #alignment has shape (batch, query_len, value_len)
 
